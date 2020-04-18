@@ -1,8 +1,8 @@
 const fs = require('fs');
 const xlsx = require('node-xlsx')
 
-let exportJsonPath = "E:\\myProject\\LakeHero\\assets\\resources\\config";
-let exportInterfacePath = "E:\\myProject\\LakeHero\\assets\\Script\\define\\interface.d.ts";
+let exportJsonPath = "E:\\myProject\\LakeHeroPro\\LakeHero\\assets\\resources\\config";
+let exportInterfacePath = "E:\\myProject\\LakeHeroPro\\LakeHero\\assets\\Script\\define\\interface.d.ts";
 
 function handelExcel(fileName) {
   let excelData = xlsx.parse('./excel/'+fileName+'.xlsx');
