@@ -1,5 +1,6 @@
 const fs = require('fs');
-const xlsx = require('node-xlsx')
+const xlsx = require('node-xlsx');
+const { type } = require('os');
 
 let exportJsonPath = "E:\\myProject\\LakeHeroPro\\LakeHero\\assets\\resources\\config";
 let exportInterfacePath = "E:\\myProject\\LakeHeroPro\\LakeHero\\assets\\Script\\define\\interface.d.ts";
@@ -20,18 +21,29 @@ function handelExcel(fileName) {
       let type = typeArr[i]
       i_content += "\t"+name+"?:"+type+";\n";
   }
+  //  console.log("开始解析");
+  //  console.log("表名"+fileName);
+  //  console.log(excelSheet[0]);
+  //  console.log(excelSheet[1]);
+  //  console.log(excelSheet[2][0]);
+  //  console.log("解析结束");
   
   // 表头对应的key
   for(let i=2;i<excelSheet.length;i++){
     let arrItem = {};
     let dataArr = excelSheet[i];
     //组装数据 对象
+    let haveData = false;
     for(let j=0;j<dataArr.length;j++){
         let key = dataName[j];
+        let dataType = typeArr[j];
         if(key&&dataArr[j]){
-            arrItem[key] = dataArr[j];
+            let itemData = filterDataByType(dataArr[j],dataType);
+            haveData = true;
+            arrItem[key] = itemData;
         }
     }
+    if(haveData)
     JSONKey.push(arrItem);
   }
   
@@ -40,6 +52,55 @@ function handelExcel(fileName) {
   interfaceContent += i_content;
   generatJSON(exportJsonPath+"\\"+fileName+'.json', JSON.stringify(JSONKey))
 };
+
+/**
+ * 过滤不同类型的数据
+ */
+function filterDataByType(data,type){
+    if(!data)return null;
+    let reData;
+    switch(type){
+        case "number":
+        case "string":
+            reData = data;
+        break;
+        case "number[]":
+            data = data.toString();
+            reData = data.split(",");
+            //把字符串转换成数字
+            for(let i=0;i<reData.length;i++){
+              if(reData[i].indexOf(".")<0){
+                reData[i] = parseInt(reData[i]);
+              }else{
+                reData[i] = parseFloat(reData[i]);
+              }
+            }
+        break;
+        case "number[][]":
+            data = data.toString();
+            let arr1 = data.split("|");
+            reData = [];
+            for(let i=0;i<arr1.length;i++){
+              let spData = arr1[i].split(",");
+              //字符串转换成数字
+              for(let j=0;j<spData.length;j++){
+                if(spData[j].indexOf(".")<0){
+                  spData[j] = parseInt(spData[j]);
+                }else{
+                  spData[j] = parseFloat(spData[j]);
+                }
+              }
+              //塞入数组中
+              if(spData&&spData.length>0)
+              reData.push(spData)
+            }
+        break;
+        default:
+            reData = data;
+        break;
+    }
+    return reData;
+}
 
 
 /**
