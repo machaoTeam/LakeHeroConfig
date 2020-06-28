@@ -37,7 +37,7 @@ function handelExcel(fileName) {
     for(let j=0;j<dataArr.length;j++){
         let key = dataName[j];
         let dataType = typeArr[j];
-        if(key&&dataArr[j]){
+        if(key&&(dataArr[j]||dataArr[j]==0)){
             let itemData = filterDataByType(dataArr[j],dataType);
             haveData = true;
             arrItem[key] = itemData;
@@ -57,7 +57,7 @@ function handelExcel(fileName) {
  * 过滤不同类型的数据
  */
 function filterDataByType(data,type){
-    if(!data)return null;
+    if(!data && data!=0)return null;
     let reData;
     switch(type){
         case "number":
